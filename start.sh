@@ -2106,6 +2106,7 @@ makeWWW(){
     return 1
   fi
   
+  domain=${domain,,}
   echo "正在绑定域名,请等待..."
   if [[ "$www_type" == "proxy" ]]; then
     resp=$(devil www add $domain proxy localhost $port)
@@ -2261,6 +2262,12 @@ installBurnReading(){
 
 uninstallBurnReading(){
   local workdir="${installpath}/serv00-play/burnreading"
+
+  if [[ ! -e "$workdir" ]]; then
+     echo "已没有可以卸载的服务!"
+     return 1
+  fi 
+
   cd $workdir
 
   if ! check_domains_empty; then
@@ -2420,8 +2427,10 @@ startWebSSH(){
   if checkProcAlive "wssh"; then
     stopProc "wssh"
   fi
+  echo "正在启动中..."
   cmd="nohup ./wssh --port=$port --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10  $args &"
   eval "$cmd"
+  sleep 2
   if checkProcAlive wssh; then
     green "启动成功！"
   else
